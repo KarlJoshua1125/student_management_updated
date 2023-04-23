@@ -32,6 +32,18 @@
         var database = firebase.database();
 
         $(document).ready(function () {
+            $('#sort-by-name-button').on('click', function() {
+                var rows = $('#students-table tbody tr').get();
+                rows.sort(function(row1, row2) {
+                    var name1 = $(row1).data('name');
+                    var name2 = $(row2).data('name');
+                    return name1.localeCompare(name2);
+                });
+                $.each(rows, function(index, row) {
+                    $('#students-table tbody').append(row);
+                });
+            });
+            
             $('#search-button').on('click', function() {
                 var searchTerm = $('#search-input').val().toLowerCase();
                 $('#students-table tbody tr').each(function() {
@@ -48,6 +60,22 @@
                 $('#search-input').val('');
                 $('#students-table tbody tr').show();
               });
+
+
+            $('#sort-button').on('click', function() {
+                var $table = $('#students-table');
+                var $tbody = $table.find('tbody');
+                var $rows = $tbody.find('tr');
+                $rows.sort(function(a, b) {
+                    var nameA = $(a).find('.name').text().toLowerCase();
+                    var nameB = $(b).find('.name').text().toLowerCase();
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0;
+                });
+                $tbody.html($rows);
+              });
+              
               
               
             $('#add-student').on('submit', function (e) {
@@ -134,14 +162,21 @@
 
     <div class="container">
         <h2>Students List</h2>
-        <div class="row mb-3">
+       
+
+        <div class="row mb-5">
             <div class="col-sm-4">
               <input type="text" class="form-control" id="search-input" placeholder="Search by name">
             </div>
             <div class="col-sm-2">
+                
               <button class="btn btn-primary" id="search-button">Search</button>
-              <button class="btn btn-secondary" id="clear-button">Clear</button>
+              <button class="btn btn-danger" id="clear-button">Clear</button>
             </div>
+            <div class="col-sm-2">
+                <button class="btn btn-secondary" id="sort-button">Sort by Name</button>
+            </div>
+            
         </div>
           
         <button type="button" class="btn btn-primary" id="add-student-btn">Add New Student</button>
@@ -158,7 +193,7 @@
             </thead>
             <tbody>
                 {% for student in students %}
-                <tr>
+                <tr >
                     <td class="id">{{ student.id }}</td>
                     <td class="name">{{ student.name }}</td>
                     <td class="year">{{ student.year }}</td>
